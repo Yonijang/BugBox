@@ -24,9 +24,12 @@ build/
 *.sqlite3
 
 # BugBox private user data
-data/screenshots/
-data/processed/
-data/database/
+data/screenshots/*
+!data/screenshots/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+data/database/*
+!data/database/.gitkeep
 
 # Logs
 *.log
