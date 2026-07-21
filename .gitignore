@@ -1,0 +1,36 @@
+# Environment variables / secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Node / React
+node_modules/
+dist/
+build/
+
+# IDE / OS
+.vscode/
+.DS_Store
+
+# Local database
+*.db
+*.sqlite
+*.sqlite3
+
+# BugBox private user data
+data/screenshots/
+data/processed/
+data/database/
+
+# Logs
+*.log
+
+# Model cache / large local files
+models/
+.cache/
