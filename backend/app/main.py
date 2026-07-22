@@ -1,9 +1,20 @@
 from fastapi import FastAPI #FastAPI를 가져온다
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI( #우리 백엔드 어플리케이션을 만든다
     title = "BugBox API",
     description = "Backend API for BugBox",
     version = "0.1.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins = [
+        "http://localhost:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 @app.get("/") #/주소로 GET 요청이 들어오면 아래 함수를 실행한다
