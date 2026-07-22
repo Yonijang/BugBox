@@ -1,16 +1,21 @@
 from contextlib import asynccontextmanager
+from typing import Annotated
 
 import app.models
-from fastapi import FastAPI #FastAPI를 가져온다
+from fastapi import Depends, FastAPI #FastAPI를 가져온다
 from fastapi.middleware.cors import CORSMiddleware
+from sqlmodel import Session
 
-from app.database import create_db_and_tables
+from app.database import create_db_and_tables, get_session
+from app.models import ErrorCreate, ErrorRecord
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     create_db_and_tables()
 
     yield
+
+SessionDep = Annotated[Session, Depends(get_session)]
 
 app = FastAPI( #우리 백엔드 어플리케이션을 만든다
     title = "BugBox API",
@@ -34,3 +39,24 @@ def root():
     return {
         "message": "BugBox API is running" #JSON 데이터를 돌려준다
     }
+
+@app.post(
+    "/api/errors",
+    response_model=ErrorRecord,
+    status_code=201,
+)
+def create_error(
+    error: ErrorCreate,
+    session: SessionDep,
+):
+    db_error = ErrorRecord(
+        title=error.title,
+        language=error.language,
+        message=error.message,
+    )
+
+    session.add(db_error)
+    session.commit()
+    session.refresh(db_error)
+
+    return db_error
