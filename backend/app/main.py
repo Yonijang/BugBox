@@ -1,10 +1,22 @@
+from contextlib import asynccontextmanager
+
+import app.models
 from fastapi import FastAPI #FastAPI를 가져온다
 from fastapi.middleware.cors import CORSMiddleware
+
+from app.database import create_db_and_tables
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    create_db_and_tables()
+
+    yield
 
 app = FastAPI( #우리 백엔드 어플리케이션을 만든다
     title = "BugBox API",
     description = "Backend API for BugBox",
     version = "0.1.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
