@@ -4,10 +4,10 @@ from typing import Annotated
 import app.models
 from fastapi import Depends, FastAPI #FastAPI를 가져온다
 from fastapi.middleware.cors import CORSMiddleware
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from app.database import create_db_and_tables, get_session
-from app.models import ErrorCreate, ErrorRecord
+from app.models import ErrorCreate, ErrorRead, ErrorRecord
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -60,3 +60,14 @@ def create_error(
     session.refresh(db_error)
 
     return db_error
+
+@app.get(
+    '/api/errors',
+    response_model=list[ErrorRead], #ErrorRead 형태의 데이터 여러 개 들어있는 리스트 응답
+)
+def get_errors(
+    session: SessionDep,
+):
+    statement = select(ErrorRecord)
+    errors = session.exec(statement).all() #ErrorRecord 조회하고 결과 전부 가져와서 error 변수에 저장
+    return errors #FastAPI가 JSON으로 바꿔서 사용자에게 전달
