@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 from typing import Annotated
 
 import app.models
-from fastapi import Depends, FastAPI #FastAPI를 가져온다
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session, select
 
@@ -71,3 +71,21 @@ def get_errors(
     statement = select(ErrorRecord)
     errors = session.exec(statement).all() #ErrorRecord 조회하고 결과 전부 가져와서 error 변수에 저장
     return errors #FastAPI가 JSON으로 바꿔서 사용자에게 전달
+
+@app.get(
+    '/api/errors/{error_id}',
+    response_model=ErrorRead,
+)
+def get_error(
+    error_id: int,
+    session: SessionDep,
+):
+    error = session.get(ErrorRecord, error_id)
+
+    if error is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Error record not found",
+        )
+    
+    return error
